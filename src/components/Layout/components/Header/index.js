@@ -13,8 +13,16 @@ import {
   faSquareQuestion,
   faKeyboard,
   faCircleQuestion,
+  faCloudUpload,
+  faMessage,
+  faUser,
+  faCoins,
+  faGear,
+  faSignOut,
 } from "@fortawesome/free-solid-svg-icons";
-import Tippy from "@tippyjs/react/headless";
+import Tippy from "@tippyjs/react/";
+import HeadlessTippy from "@tippyjs/react/headless";
+import "tippy.js/dist/tippy.css";
 import { useEffect, useState } from "react";
 import { Wrapper as PopperWrapper } from "~/components/Popper";
 import AccountItem from "~/components/AccountItem";
@@ -22,10 +30,26 @@ import Button from "~/components/Button";
 import Menu from "~/components/Popper/Menu";
 
 const cx = classNames.bind(styles);
+
 const MENU_ITEMS = [
   {
     icon: <FontAwesomeIcon icon={faLanguage} />,
     title: "English",
+    children: {
+      title: "Language",
+      data: [
+        {
+          type: "Language",
+          code: "en",
+          title: "English",
+        },
+        {
+          type: "Language",
+          code: "vi",
+          title: "VietNamese",
+        },
+      ],
+    },
   },
   {
     icon: <FontAwesomeIcon icon={faCircleQuestion} />,
@@ -40,12 +64,42 @@ const MENU_ITEMS = [
 
 function Header() {
   const [searchResult, setSearchResult] = useState([]);
+  const handleMenuChane = (menuItem) => {
+    console.log(menuItem);
+  };
+
+  const currentUser = true;
 
   useEffect(() => {
     setTimeout(() => {
       setSearchResult([]);
     }, 0);
   }, []);
+
+  const userMenu = [
+    {
+      icon: <FontAwesomeIcon icon={faUser} />,
+      title: "View Profile",
+      to: "/feedbback",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faCoins} />,
+      title: "Get coin",
+      to: "/coin",
+    },
+    {
+      icon: <FontAwesomeIcon icon={faGear} />,
+      title: "Setting",
+      to: "/setting",
+    },
+    ...MENU_ITEMS,
+    {
+      icon: <FontAwesomeIcon icon={faSignOut} />,
+      title: "Log out",
+      to: "/logout",
+      separate: true,
+    },
+  ];
   return (
     <header className={cx("wrapper")}>
       <div className={cx("inner")}>
@@ -59,10 +113,6 @@ function Header() {
             <div className={cx("search-result")} tabIndex="-1" {...attrs}>
               <PopperWrapper>
                 <h4 className={cx("search-title")}>Accounts</h4>
-                {/* <AccountItem />
-                <AccountItem />
-                <AccountItem />
-                <AccountItem /> */}
               </PopperWrapper>
             </div>
           )}
@@ -82,14 +132,40 @@ function Header() {
             </button>
           </div>
         </Tippy>
-        <div className={cx("actions")}>
-          <Button text>Upload</Button>
-          <Button primary>Login</Button>
 
-          <Menu items={MENU_ITEMS}>
-            <button className={cx("more-btn")}>
-              <FontAwesomeIcon icon={faEllipsisVertical} />
-            </button>
+        <div className={cx("actions")}>
+          {currentUser ? (
+            <>
+              <Tippy delay={[0, 200]} content="Upload video" placement="bottom">
+                <button className={cx("btn-action")}>
+                  <FontAwesomeIcon icon={faCloudUpload} />
+                </button>
+              </Tippy>
+              <button className={cx("btn-action")}>
+                <FontAwesomeIcon icon={faMessage} />
+              </button>
+            </>
+          ) : (
+            <>
+              <Button text>Upload</Button>
+              <Button primary>Login</Button>
+            </>
+          )}
+          <Menu
+            items={currentUser ? userMenu : MENU_ITEMS}
+            onChange={handleMenuChane}
+          >
+            {currentUser ? (
+              <img
+                className={cx("user-avatar")}
+                src="https://yt3.ggpht.com/FqMybHw7iwFQolAPKRu1muyhI7Eunb2ixftZ9ZRP_kGArx1k0uwDUNcebKMxkO9TIfAEbr8nbQ=s88-c-k-c0x00ffffff-no-rj"
+                alt=""
+              ></img>
+            ) : (
+              <button className={cx("more-btn")}>
+                <FontAwesomeIcon icon={faEllipsisVertical} />
+              </button>
+            )}
           </Menu>
         </div>
       </div>
